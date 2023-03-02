@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use Illuminate\Http\Request;
+use App\Http\Resources\ArticleResource;
 
 class ArticleController extends Controller
 {
@@ -13,7 +14,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        return new ArticleResource(Article::all());
     }
 
     /**
@@ -30,7 +31,7 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         Article::create($request->all());
-        return "Article stored";
+        return response()->json('Article stored');
     }
 
     /**
@@ -54,7 +55,15 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        if (Article::where('id', $id)->exists()) {
+            Article::find($id)->update([
+                'description' => $request->description,
+                'title' => $request->title
+            ]);
+            return response()->json('Article updated');
+        }else{
+            return response()->json('Article not found');
+        }
     }
 
     /**
@@ -62,6 +71,12 @@ class ArticleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if(Article::where('id', $id)->exists()){
+            Article::findOrFail($id)->delete();
+            return response()->json('Article deleted');
+        }else{
+            return response()->json('Invalid ID');
+        }
+
     }
 }

@@ -16,10 +16,12 @@ use App\Http\Controllers\Api\ArticleController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+
 
 Route::post("register", [AuthController::class, 'register']);
 Route::post("login", [AuthController::class, 'login']);
-Route::resource('article', ArticleController::class);
+
+Route::middleware('auth:sanctum')->group(function (){
+    Route::resource('article', ArticleController::class);
+});
+
